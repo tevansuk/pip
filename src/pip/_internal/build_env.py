@@ -76,6 +76,12 @@ class BuildEnvironment(object):
                 get_python_lib(plat_specific=True),
             )
         }
+        if hasattr(sys, "real_prefix"):
+            # Exclude system site-packages in a venv
+            venv_base = _Prefix(sys.real_prefix)
+            system_sites |= {
+                os.path.normcase(site) for site in venv_base.lib_dirs
+            }
         self._site_dir = os.path.join(self._temp_dir.path, 'site')
         if not os.path.exists(self._site_dir):
             os.mkdir(self._site_dir)
